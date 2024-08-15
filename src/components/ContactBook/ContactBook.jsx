@@ -26,16 +26,23 @@ export default function ContactBook() {
 
   const initialContacts = useSelector(getContacts);
   // console.log(initialContacts);
+  // console.log(initialContacts.includes(null) === false);
 
   const filter = useSelector(getFilter);
   // console.log(filter);
 
   const dispatch = useDispatch();
 
+  // localStorage.clear();
+
   useEffect(() => {
     async function fetchContacts() {
       try {
-        if (initialContacts === null || initialContacts.length === 0) {
+        if (
+          initialContacts === null ||
+          initialContacts.length === 0 ||
+          initialContacts.includes(null)
+        ) {
           alert('Nu aveti contacte salvate in lista !');
           return;
         }
@@ -50,8 +57,6 @@ export default function ContactBook() {
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(initialContacts));
-
-    // localStorage.clear();
   }, [initialContacts]);
 
   useEffect(() => {
@@ -122,10 +127,21 @@ export default function ContactBook() {
     dispatch(deleteContact(id));
   }
 
-  const getContactsByName = initialContacts.filter(contact => {
-    const isFound = contact.name.toLowerCase().includes(filter.toLowerCase());
-    return isFound;
-  });
+  let getContactsByName = [];
+
+  if (
+    initialContacts.includes(null) === false ||
+    initialContacts !== undefined
+  ) {
+    // console.log(initialContacts);
+
+    getContactsByName = initialContacts.filter(contact => {
+      console.log(contact);
+
+      const isFound = contact.name.toLowerCase().includes(filter.toLowerCase());
+      return isFound;
+    });
+  }
 
   return (
     <section className={styles.section}>
@@ -173,31 +189,33 @@ export default function ContactBook() {
           Contacts found: {getContactsByName.length}
         </p>
       </div>
-      <ul className={styles.contactList}>
-        {getContactsByName.map(contact => {
-          return (
-            <li className={styles.contactItem} key={contact.id}>
-              <span className={styles.span}></span>
-              <span>
-                <b>{contact.name} :</b>
-              </span>
-              <span>
-                <b>{contact.number}</b>
-              </span>
-              <Button
-                variant={true}
-                type="button"
-                disabled={false}
-                handleClick={() => {
-                  handleRemove(contact.id);
-                }}
-              >
-                Delete
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
+      {initialContacts.includes(null) === false && (
+        <ul className={styles.contactList}>
+          {getContactsByName.map(contact => {
+            return (
+              <li className={styles.contactItem} key={contact.id}>
+                <span className={styles.span}></span>
+                <span>
+                  <b>{contact.name} :</b>
+                </span>
+                <span>
+                  <b>{contact.number}</b>
+                </span>
+                <Button
+                  variant={true}
+                  type="button"
+                  disabled={false}
+                  handleClick={() => {
+                    handleRemove(contact.id);
+                  }}
+                >
+                  Delete
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }
