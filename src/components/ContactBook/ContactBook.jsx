@@ -136,7 +136,7 @@ export default function ContactBook() {
     // console.log(initialContacts);
 
     getContactsByName = initialContacts.filter(contact => {
-      console.log(contact);
+      // console.log(contact);
 
       const isFound = contact.name.toLowerCase().includes(filter.toLowerCase());
       return isFound;
